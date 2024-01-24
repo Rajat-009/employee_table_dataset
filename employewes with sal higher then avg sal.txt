@@ -1,0 +1,40 @@
+SELECT
+  e.name,
+  e.sal,
+  e.dept_id
+FROM
+  storedata-009.music_data.EMPLOYEES AS e
+WHERE
+  e.sal > (
+  SELECT
+    AVG(sal)
+  FROM
+    storedata-009.music_data.EMPLOYEES
+  WHERE
+    dept_id = e.dept_id ) 
+    
+    
+    --====================================================================================
+SELECT
+  *
+FROM (
+  SELECT
+    *,
+    AVG(sal) OVER(PARTITION BY dept_id) AS avg_salary
+  FROM
+    storedata-009.music_data.EMPLOYEES ) AS e
+WHERE
+  sal>e.avg_salary 
+  
+  
+  --=============
+
+  WITH avg_sal AS (
+    select avg(sal) as avgsal_bydpt, dept_id
+    from storedata-009.music_data.EMPLOYEES
+    group by dept_id
+  )
+
+  select e.* from storedata-009.music_data.EMPLOYEES as e
+  join avg_sal on e.dept_id = avg_sal.dept_id
+  where e.sal > avg_sal.avgsal_bydpt
